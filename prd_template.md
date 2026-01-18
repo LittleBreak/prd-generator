@@ -1,7 +1,5 @@
 Here is a comprehensive PRD template designed to meet the criteria of an "excellent" PRD. It balances high-level strategy with specific technical requirements and includes sections for prioritization and version control.
 
-You can copy and paste this directly into Notion, Google Docs, or Confluence.
-
 ---
 
 # PRD: [Feature/Project Name]
@@ -12,6 +10,7 @@ You can copy and paste this directly into Notion, Google Docs, or Confluence.
 | **Owner (PM)** | @Name |
 | **Tech Lead** | @Name |
 | **Designer** | @Name |
+| **QA Lead** | @Name |
 | **Target Release** | YYYY-MM-DD (e.g., v2.4 or Q3 Launch) |
 | **Last Updated** | YYYY-MM-DD |
 
@@ -38,6 +37,16 @@ You can copy and paste this directly into Notion, Google Docs, or Confluence.
 
 * [ ] Metric 1: [e.g., < 1% error rate on exports]
 * [ ] Metric 2: [e.g., 500 exports generated per week]
+
+### 1.4 Analytics & Instrumentation
+
+*What tracking is required to measure the KPIs above?*
+
+| Event Name | Trigger | Properties | Priority |
+| --- | --- | --- | --- |
+| `export_started` | User clicks "Download" | file_count, total_size | **P0** |
+| `export_completed` | Download finishes | duration_ms, success | **P0** |
+| `export_failed` | Export errors | error_type, file_count | **P0** |
 
 ---
 
@@ -74,15 +83,16 @@ You can copy and paste this directly into Notion, Google Docs, or Confluence.
 | **FR.2** | Export Limit | System must cap exports at 5GB to prevent timeout. | **P0** |
 | **FR.3** | Background Processing | If export takes >5s, show a progress bar/toast. | **P1** |
 
-### 3.2 User Experience (UX) & Design
+### 3.2 Edge Cases & Error Handling
 
-* **Figma Link:** [Insert Link Here]
-* **Prototype:** [Insert Link Here]
-* **Key UX Notes:**
-* *Note 1: Ensure the "Download" button is disabled until at least one item is selected.*
-* *Note 2: Use existing "LoadingSpinner" component.*
+*How should the system behave in non-happy-path scenarios?*
 
-
+| Scenario | Expected Behavior | Priority |
+| --- | --- | --- |
+| User selects files exceeding 5GB limit | Show error message, prevent export | **P0** |
+| Export fails mid-process | Show retry option, log error | **P0** |
+| User loses connection during export | Resume download if possible, else show error | **P1** |
+| User has no files to export | Disable export button, show empty state | **P1** |
 
 ### 3.3 Technical & Non-Functional Requirements
 
@@ -90,6 +100,8 @@ You can copy and paste this directly into Notion, Google Docs, or Confluence.
 
 * **Performance:** Export generation must start within 200ms of click.
 * **Security:** Users can only export data they have explicit "Read" access to.
+* **Accessibility:** Must meet WCAG 2.1 AA. All controls keyboard-navigable, screen reader compatible.
+* **Localization:** [In Scope / Out of Scope] — If in scope, list supported locales.
 * **Mobile:** This feature is explicitly **out of scope** for mobile web view.
 
 ---
@@ -98,14 +110,32 @@ You can copy and paste this directly into Notion, Google Docs, or Confluence.
 
 ### 4.1 Scope & Phasing
 
-* **Phase 1 (MVP):** CSV export only. Max 50 files.
-* **Phase 2 (Fast Follow):** PDF export support. Unlimited file selection.
+| Phase | Scope | Target Date |
+| --- | --- | --- |
+| **Phase 1 (MVP)** | CSV export only. Max 50 files. | YYYY-MM-DD |
+| **Phase 2 (Fast Follow)** | PDF export support. Unlimited file selection. | YYYY-MM-DD |
+
 * **Out of Scope:** Emailing the export to the user (download only for now).
 
-### 4.2 Dependencies
+### 4.2 Rollout Strategy
+
+* **Feature Flag:** [e.g., `enable_bulk_export`]
+* **Rollout Plan:** [e.g., 5% → 25% → 100% over 2 weeks]
+* **Rollback Trigger:** [e.g., Error rate > 5% or P0 bug discovered]
+* **Rollback Plan:** Disable feature flag, notify affected users.
+
+### 4.3 Dependencies
 
 * [ ] Requires Backend API endpoint `POST /api/v1/bulk-export` (Status: In Progress)
 * [ ] Requires Legal approval on data export privacy policy.
+
+### 4.4 Testing Requirements
+
+* **Unit Tests:** [e.g., Cover all export utility functions]
+* **Integration Tests:** [e.g., API endpoint tests with mock data]
+* **E2E Tests:** [e.g., Full export flow in staging environment]
+* **UAT Criteria:** [e.g., QA sign-off on all P0 user stories]
+* **Performance Testing:** [e.g., Load test with 100 concurrent exports]
 
 ---
 
@@ -139,4 +169,3 @@ You can copy and paste this directly into Notion, Google Docs, or Confluence.
 2. **Use the "P" system:** Always prioritize requirements (P0 = Critical, P1 = Important, P2 = Nice to have).
 3. **Keep it alive:** Update the "Decision Log" whenever the scope changes during development.
 
-Would you like me to fill out the "Context" or "User Stories" section of this template for a specific idea you have in mind?
